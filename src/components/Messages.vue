@@ -138,7 +138,7 @@ export default {
 
           this.messageUrl = ''
           this.messageContent = ''
-          this.isImageFiles = false
+          this.isImageFile = false
           this.isVideoFile = false
           this.youtubeId = false
           this.vimeoId = false
