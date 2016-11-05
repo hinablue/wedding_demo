@@ -127,6 +127,7 @@ class MessagesController extends BaseController {
           'status' => 'ok',
           'results' => array_merge($data, [
             'id' => $uuid,
+            'file' => '/content/' . $data['file'],
             'fbAppId' => $data['id'],
             'createdAt' => $today
           ])
