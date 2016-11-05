@@ -133,15 +133,21 @@ export default {
           })
 
           this.$nextTick(() => {
+            this.messageUrl = ''
+            this.messageContent = ''
+            this.isImageFile = false
+            this.isVideoFile = false
+            this.youtubeId = false
+            this.vimeoId = false
+
+            this.$swal({
+              title: '好！',
+              type: 'success',
+              text: '收到你的祝福了～'
+            })
+
             this.$refs.masonryCards.masonry.layout()
           })
-
-          this.messageUrl = ''
-          this.messageContent = ''
-          this.isImageFile = false
-          this.isVideoFile = false
-          this.youtubeId = false
-          this.vimeoId = false
         })
     },
     submitMessage () {
