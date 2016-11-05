@@ -8,28 +8,11 @@
           is licensed <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC ANS 4.0</a>.
         </p>
         <p>
-          <a class="icon" @click.prevent.stop="forkMe()">
+          <a class="icon" href="https://github.com/hinablue/wedding_demo">
             <i class="fa fa-github"></i>
           </a>
         </p>
       </div>
     </div>
-    <fork-me-modal ref="forkMeModal"></fork-me-modal>
   </footer>
 </template>
-
-<script>
-import ForkMeModal from './ForkMeModal.vue'
-
-export default {
-  name: 'Footer',
-  components: {
-    'fork-me-modal': ForkMeModal
-  },
-  methods: {
-    forkMe () {
-      this.$refs.forkMeModal.open = true
-    }
-  }
-}
-</script>
