@@ -146,6 +146,7 @@ export default {
               text: '收到你的祝福了～'
             })
 
+            this.$refs.masonryCards.masonry.reloadItems()
             this.$refs.masonryCards.masonry.layout()
           })
         })
@@ -196,7 +197,6 @@ export default {
     prepareFacebookData () {
       let _that = this
       window.FB.api('/me', function (response) {
-        console.log(response)
         if (response && !response.error) {
           _that.fbLogin = true
           _that.facebook.id = response.id
