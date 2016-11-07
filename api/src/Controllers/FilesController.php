@@ -13,6 +13,45 @@ use \Firebase\JWT\JWT;
 use Ramsey\Uuid\Uuid;
 
 class FilesController extends BaseController {
+  protected function processImage($file) {
+    $image = new \Imagick($file);
+
+    $orientation = $image->getImageOrientation();
+
+    switch ($orientation) {
+      case \Imagick::ORIENTATION_BOTTOMRIGHT:
+        // rotate 180 degrees
+        $image->rotateimage(new \ImagickPixel('#00000000'), 180);
+      break;
+
+      case \Imagick::ORIENTATION_RIGHTTOP:
+        // rotate 90 degrees CW
+        $image->rotateimage(new \ImagickPixel('#00000000'), 90);
+      break;
+
+      case \Imagick::ORIENTATION_LEFTBOTTOM:
+        // rotate 90 degrees CCW
+        $image->rotateimage(new \ImagickPixel('#00000000'), -90);
+      break;
+    }
+
+    $image->setImageOrientation(\Imagick::ORIENTATION_TOPLEFT);
+    $image->adaptiveResizeImage(1024, 1024, true);
+    $image->setImageCompression(85);
+    $image->stripImage();
+    $image->writeImage($file);
+
+    switch (strtolower(pathinfo($file, PATHINFO_EXTENSION))) {
+      case 'jpg':
+      case 'jpeg':
+        exec('nohup $(which jpegoptim) -m 65 --strap-all -oq '.$file. ' > /dev/null 2>&1 && $(which chmod) 644 '.$file. ' &');
+      break;
+      case 'png':
+        exec('nohup $(which pngquant) --quality=50-60 --speed 5 --ext .png --force '.$file.' > /dev/null 2>&1 && $(which chmod) 644 '.$file. ' &');
+      break;
+    }
+  }
+
   public function dispatch(Request $request, Response $response) {
     try {
       if ($request->isOptions()) {
@@ -58,6 +97,9 @@ class FilesController extends BaseController {
           if ($flow_file->validateFile()
               && $flow_file->save($folder . $new_filename)
           ) {
+
+            $this->processImage($folder . $new_filename);
+
             return $response->withJson([
               'status' => 'ok',
               'messages' => 'Succeeded!',
@@ -71,7 +113,7 @@ class FilesController extends BaseController {
           } else {
             return $response->withJson([
               'status' => 'ok'
-            ], 204);
+            ], 200);
           }
         } else {
           $uploaded_files = [];
@@ -85,6 +127,7 @@ class FilesController extends BaseController {
             $file->moveTo($full_path);
 
             if (file_exists($full_path)) {
+              $this->processImage($full_path);
               array_push($uploaded_files, [
                 'filename' => $new_filename,
                 'url' => $api_static . $new_filename
