@@ -5,15 +5,15 @@
     v-for="entry in messages.items"
     @click.prevent.stop="toggleCard(entry.id)">
     <div class="card-image" v-if="isPhotoOrVideo(entry)">
-      <figure class="image" v-if="isFile(entry.file)">
-        <img v-bind:src="entry.file">
-      </figure>
       <div class="container responsive-intrinsic-container" v-if="isYoutubeId(entry.url)">
         <iframe :src="'https://www.youtube.com/embed/' + isYoutubeId(entry.url)" frameborder="0" allowfullscreen></iframe>
       </div>
       <div class="container responsive-intrinsic-container" v-if="isVimeoId(entry.url)">
         <iframe :src="'https://player.vimeo.com/video/' + isVimeoId(entry.url)" frameborder="0" allowfullscreen></iframe>
       </div>
+      <figure class="image" v-if="isFile(entry.file)">
+        <img v-bind:src="entry.file">
+      </figure>
     </div>
     <div class="card-content">
       <div class="media">
@@ -68,7 +68,7 @@ export default {
       return '//graph.facebook.com/' + id + '/picture?type=large'
     },
     isFile (file) {
-      return file !== ''
+      return file !== '' && file !== '/content/'
     },
     isYoutubeId (url) {
       const matches = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/i)
@@ -88,7 +88,7 @@ export default {
       return !!(this.isYoutubeId(url) || this.isVimeoId(url))
     },
     isPhotoOrVideo (entry) {
-      return entry.file !== '' || this.isVideo(entry.url)
+      return (entry.file !== '' && entry.file !== '/content/') || this.isVideo(entry.url)
     }
   },
   mounted () {
@@ -122,6 +122,8 @@ export default {
 
 <style scoped>
 .card {
+  width: 375px;
+  max-width: 100%;
   margin: 0 auto 10px auto;
   float: left;
 }
