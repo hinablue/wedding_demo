@@ -284,7 +284,10 @@ export default {
       }
     })
     flow.on('error', (message, file) => {
+      flow.removeFile(file)
       this.sendingMessage = false
+      this.isImageFile = false
+      this.file = ''
       this.$swal({
         title: '喔歐！',
         type: 'error',
