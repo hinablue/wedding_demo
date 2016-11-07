@@ -37,7 +37,7 @@
             </figure>
             <div class="notification is-warning has-text-centered" id="file-uploader">
               <p>你可以按這裡選取檔案，或是直接將相片拖曳到這裡上傳。</p>
-              <p>目前只有支援 PNG, JPG, GIF 格式，檔案請不要超過 20 MB 感恩。</p>
+              <p>目前只有支援 PNG, JPG, GIF 格式，檔案請不要超過 5 MB 感恩。</p>
             </div>
           </p>
           <br>
@@ -66,7 +66,8 @@ let flow = new Flow({
   target: '/api/fileuploader',
   singleFile: true,
   allowDuplicateUploads: true,
-  testChunks: false
+  testChunks: false,
+  successStatuses: [200, 201, 202, 204]
 })
 
 export default {
@@ -133,12 +134,17 @@ export default {
           })
 
           this.$nextTick(() => {
+            flow.files.forEach((file) => {
+              flow.removeFile(file)
+            })
+
             this.messageUrl = ''
             this.messageContent = ''
             this.isImageFile = false
             this.isVideoFile = false
             this.youtubeId = false
             this.vimeoId = false
+            this.file = ''
 
             this.$swal({
               title: '好！',
@@ -146,8 +152,10 @@ export default {
               text: '收到你的祝福了～'
             })
 
-            this.$refs.masonryCards.masonry.reloadItems()
-            this.$refs.masonryCards.masonry.layout()
+            setTimeout(() => {
+              this.$refs.masonryCards.masonry.reloadItems()
+              this.$refs.masonryCards.masonry.layout()
+            }, 100)
           })
         })
     },
@@ -244,8 +252,8 @@ export default {
   },
   mounted () {
     flow.on('fileAdded', (file) => {
-      // 20MB File limit.
-      if (file.size >= 1024 * 20000) {
+      // 5MB File limit.
+      if (file.size >= 1024 * 5000) {
         this.$swal({
           title: '喔歐！',
           type: 'error',
