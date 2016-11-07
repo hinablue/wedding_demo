@@ -1,6 +1,13 @@
-# wedding2016
+# Wedding Site
 
 > Hina Caline Wedding
+
+##### Requirement
+* PHP >= 5.6
+* Imagemagick
+* Imagick
+* jpegoptim
+* pngquant
 
 ## Build Setup
 
