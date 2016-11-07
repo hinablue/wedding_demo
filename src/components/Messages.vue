@@ -126,6 +126,7 @@ export default {
 
           this.$refs.masonryCards.messages.items.unshift({
             id: response.results.id,
+            name: response.results.name,
             fbAppId: response.results.fbAppId,
             file: response.results.file,
             url: response.results.url,
