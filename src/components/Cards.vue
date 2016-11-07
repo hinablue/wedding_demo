@@ -34,6 +34,9 @@
       </div>
     </div>
   </div>
+  <div class="card button has-text-centered is-danger" v-bind:class="{ 'is-loading': loadingMessage }" @click.prevent="loadMoreMessages()" v-if="isMoreMessages()">
+    <p>更多祝福</p>
+  </div>
 </div>
 </template>
 
@@ -52,12 +55,46 @@ export default {
   data () {
     return {
       messages: {
+        totalPages: 1,
+        current: 1,
         items: []
       },
+      loadingMessage: false,
       masonry: null
     }
   },
   methods: {
+    isMoreMessages () {
+      return this.messages.totalPages > 1 && this.messages.last !== this.messages.current
+    },
+    loadMoreMessages () {
+      this.loadingMessage = true
+      request.get('/api/messages')
+      .query({
+        page: this.messages.next
+      })
+      .end((err, res) => {
+        this.loadingMessage = false
+        if (err) {
+          // Loading failed.
+        } else {
+          const response = JSON.parse(res.text)
+          if (response.status === 'ok') {
+            response.results.items.forEach((item) => {
+              this.messages.items.push(item)
+            })
+            this.messages.current = response.results.current
+            this.messages.next = response.results.next
+            this.messages.totalPages = response.results.totalPages
+
+            setTimeout(() => {
+              this.masonry.reloadItems()
+              this.masonry.layout()
+            }, 500)
+          }
+        }
+      })
+    },
     toggleCard (id) {
       this.$nextTick(() => {
         document.getElementById(id).classList.toggle('expand')
@@ -101,17 +138,15 @@ export default {
           if (response.status === 'ok') {
             this.messages = response.results
             setTimeout(() => {
-              this.$nextTick(() => {
-                this.masonry = new Masonry(
-                  document.getElementById('masonry'),
-                  {
-                    itemSelector: '.card',
-                    percentPosition: true,
-                    fitWidth: false,
-                    gutter: 10
-                  }
-                )
-              })
+              this.masonry = new Masonry(
+                document.getElementById('masonry'),
+                {
+                  itemSelector: '.card',
+                  percentPosition: true,
+                  fitWidth: false,
+                  gutter: 10
+                }
+              )
             }, 500)
           }
         }
